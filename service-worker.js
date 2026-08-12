@@ -1,4 +1,4 @@
-const CACHE_NAME = "dojo-tokon-v6";
+const CACHE_NAME = "dojo-tokon-v9";
 const APP_SHELL = [
   "./",
   "./index.html",

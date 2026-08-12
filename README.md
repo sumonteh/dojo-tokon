@@ -12,6 +12,10 @@ La versión publicada mediante GitHub Pages está disponible en:
 
 GitHub Pages sirve el sitio por HTTPS, por lo que permite registrar el Service Worker e instalar la PWA en navegadores compatibles.
 
+### v0.1.1: Mobile Landscape Compact
+
+En pantallas horizontales de poca altura, Dojo Tokon activa automáticamente un diseño compacto: cabecera superpuesta de 30–34 px, arena de aproximadamente 63% de la altura visible, controles limitados al 35%, HUD del combo en una línea y paneles flotantes para modo, historial y estadísticas. El layout usa `100dvh`, safe areas y no permite scroll durante el entrenamiento.
+
 ## Cómo ejecutarlo
 
 La aplicación necesita servirse por HTTP para que los módulos JavaScript, el manifest y el Service Worker funcionen correctamente. Desde esta carpeta:
