@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Dojo Tokon">
+  <rect width="512" height="512" rx="104" fill="#101820"/>
+  <path d="M70 155h372v202H70z" fill="#0a0f14" stroke="#c7f43c" stroke-width="22"/>
+  <path d="M127 211h94v36h-29v72h-36v-72h-29zm137 0h57c45 0 74 17 74 54s-29 54-74 54h-57zm36 34v40h20c25 0 37-6 37-20s-12-20-37-20z" fill="#eaf4f2"/>
+  <path d="M92 122h328" stroke="#56e0ce" stroke-width="16" stroke-linecap="round"/>
+  <circle cx="417" cy="390" r="23" fill="#ff526c"/>
+</svg>

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#10151c">
+  <meta name="description" content="Entrenador local de combos para juegos de lucha.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Dojo Tokon">
+  <title>Dojo Tokon</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="orientation-hint" role="status">Gira el dispositivo para entrenar más cómodamente.</div>
+
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Dojo Tokon, inicio">
+        <span class="brand-mark" aria-hidden="true">DT</span>
+        <span><strong>DOJO TOKON</strong><small>COMBO LAB // LOCAL</small></span>
+      </a>
+      <div class="top-actions">
+        <span id="input-source" class="status-chip"><i></i> TECLADO / TÁCTIL</span>
+        <button id="sound-toggle" class="utility-button" type="button" aria-pressed="false">SONIDO: OFF</button>
+        <button id="touch-toggle" class="utility-button desktop-only" type="button" aria-pressed="false">CONTROLES</button>
+        <button id="fullscreen-button" class="utility-button" type="button">PANTALLA COMPLETA</button>
+      </div>
+    </header>
+
+    <section class="mode-strip" aria-label="Modo de entrenamiento">
+      <div class="mode-tabs" role="tablist">
+        <button class="mode-tab active" data-mode="learn" role="tab" aria-selected="true">LEARN<small>Aprende el orden</small></button>
+        <button class="mode-tab" data-mode="practice" role="tab" aria-selected="false">PRACTICE<small>Entrena el ritmo</small></button>
+        <button class="mode-tab" data-mode="challenge" role="tab" aria-selected="false">CHALLENGE<small>Sin pistas</small></button>
+      </div>
+      <div class="streak-badge"><span>RACHA</span><strong id="streak-value">0</strong></div>
+    </section>
+
+    <div class="training-grid">
+      <section class="arena-panel">
+        <div class="arena-labels" aria-hidden="true">
+          <span>PLAYER <b>01</b></span>
+          <span>DUMMY <b>CPU</b></span>
+        </div>
+        <canvas id="fight-canvas" aria-label="Área de combate: jugador y dummy" role="img"></canvas>
+        <div class="arena-hud">
+          <div class="combo-goal">
+            <span id="goal-label">SIGUIENTE</span>
+            <div id="combo-sequence" class="sequence" aria-live="polite"></div>
+          </div>
+          <div id="feedback" class="feedback" aria-live="assertive">
+            <strong>LISTO</strong><small>Selecciona un modo y comienza</small>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <section class="panel-card history-card">
+          <button id="history-toggle" class="panel-heading collapsible" type="button" aria-expanded="true">
+            <span>INPUT HISTORY</span><small>ÚLTIMOS 15</small>
+          </button>
+          <ol id="input-history" class="input-history">
+            <li class="empty-history">Esperando inputs…</li>
+          </ol>
+        </section>
+
+        <section class="panel-card visualizer-card" aria-label="Visualizador de controles">
+          <div class="panel-heading"><span>INPUT MONITOR</span><small>EN VIVO</small></div>
+          <div class="mini-controller">
+            <div class="mini-dpad" aria-label="D-pad">
+              <span data-visual="UP" class="up">↑</span>
+              <span data-visual="LEFT" class="left">←</span>
+              <span data-visual="DOWN" class="down">↓</span>
+              <span data-visual="RIGHT" class="right">→</span>
+            </div>
+            <div class="mini-face" aria-label="Botones de ataque">
+              <span data-visual="M" class="triangle">△</span>
+              <span data-visual="L" class="square">□</span>
+              <span data-visual="H" class="circle">○</span>
+              <span data-visual="ASSIST" class="cross">×</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel-card session-card">
+          <div class="panel-heading"><span>PROGRESO</span><small>EN ESTE DISPOSITIVO</small></div>
+          <dl class="stats-grid">
+            <div><dt>Intentos</dt><dd id="stat-attempts">0</dd></div>
+            <div><dt>Completados</dt><dd id="stat-success">0</dd></div>
+            <div><dt>Fallidos</dt><dd id="stat-failed">0</dd></div>
+            <div><dt>Mejor tiempo</dt><dd id="stat-best-time">—</dd></div>
+            <div><dt>Timing medio</dt><dd id="stat-average">—</dd></div>
+            <div><dt>Mejor racha</dt><dd id="stat-best-streak">0</dd></div>
+          </dl>
+          <button id="reset-progress" class="reset-button" type="button">RESET PROGRESS</button>
+        </section>
+      </aside>
+    </div>
+
+    <section id="touch-controls" class="touch-controls" aria-label="Controles táctiles">
+      <div class="touch-zone dpad-zone">
+        <span class="zone-label">MOVEMENT</span>
+        <button class="control-button dpad-button up" data-input="UP" aria-label="Arriba">↑</button>
+        <button class="control-button dpad-button left" data-input="LEFT" aria-label="Izquierda">←</button>
+        <button class="control-button dpad-button down" data-input="DOWN" aria-label="Abajo">↓</button>
+        <button class="control-button dpad-button right" data-input="RIGHT" aria-label="Derecha">→</button>
+        <span class="dpad-center" aria-hidden="true"></span>
+      </div>
+      <div class="touch-divider" aria-hidden="true"></div>
+      <div class="touch-zone face-zone">
+        <span class="zone-label">ATTACK</span>
+        <button class="control-button face-button triangle" data-input="M" aria-label="Medium, triángulo">△</button>
+        <button class="control-button face-button square" data-input="L" aria-label="Light, cuadrado">□</button>
+        <button class="control-button face-button circle" data-input="H" aria-label="Heavy, círculo">○</button>
+        <button class="control-button face-button cross" data-input="ASSIST" aria-label="Assist, equis">×</button>
+      </div>
+    </section>
+
+    <footer class="footer-note">
+      <span>TECLADO: <kbd>J</kbd> LIGHT · <kbd>K</kbd> MEDIUM · <kbd>L</kbd> HEAVY · MANTÉN <kbd>S</kbd> + <kbd>L</kbd> PARA LAUNCHER</span>
+      <span>DATOS LOCALES · SIN CUENTA · SIN ANALYTICS</span>
+    </footer>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
