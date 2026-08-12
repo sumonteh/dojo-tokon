@@ -9,6 +9,13 @@ export class FightScene {
     this.lastTime = 0;
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);
+    this.handleViewportChange = () => requestAnimationFrame(() => {
+      this.resize();
+      this.draw(performance.now());
+    });
+    window.addEventListener("resize", this.handleViewportChange, { passive: true });
+    window.addEventListener("orientationchange", this.handleViewportChange, { passive: true });
+    window.visualViewport?.addEventListener("resize", this.handleViewportChange, { passive: true });
     this.loop = this.loop.bind(this);
     requestAnimationFrame(this.loop);
   }
@@ -66,10 +73,12 @@ export class FightScene {
     this.canvas.dataset.dummyState = this.dummy.state;
     ctx.clearRect(0, 0, width, height);
 
-    const floor = Math.max(height * .67, height - 150);
+    const compact = height < 320;
+    const fighterScale = compact ? Math.max(.82, Math.min(1, height / 225)) : 1;
+    const floor = compact ? height - Math.max(18, height * .08) : Math.max(height * .67, height - 150);
     this.drawBackground(ctx, width, height, floor);
-    this.drawFighter(ctx, width * .28, floor, 1, this.player, "#c7f43c", time);
-    this.drawFighter(ctx, width * .72, floor, -1, this.dummy, "#ff657b", time);
+    this.drawFighter(ctx, width * .28, floor, 1, this.player, "#c7f43c", time, fighterScale);
+    this.drawFighter(ctx, width * .72, floor, -1, this.dummy, "#ff657b", time, fighterScale);
   }
 
   drawBackground(ctx, width, height, floor) {
@@ -95,7 +104,7 @@ export class FightScene {
     ctx.fillRect(0, floor, width, 2);
   }
 
-  drawFighter(ctx, x, floor, facing, fighter, color, time) {
+  drawFighter(ctx, x, floor, facing, fighter, color, time, scale = 1) {
     const age = time - fighter.started;
     let y = floor;
     let lean = Math.sin(time / 430) * .03;
@@ -109,20 +118,20 @@ export class FightScene {
     if (fighter.state === "medium") { frontArm = { x: 61, y: 10 }; lean = .12; }
     if (fighter.state === "heavy") { frontArm = { x: 67, y: 19 }; lean = .2; }
     if (fighter.state === "launcher") { frontArm = { x: 31, y: -48 }; lean = -.13; frontLeg = { x: 26, y: 59 }; }
-    if (fighter.state === "hit") { lean = -.24; x += 10 * -facing; }
-    if (fighter.state === "launch-hit") { y -= Math.min(age / 170, 1) * 52; lean = -.3; }
+    if (fighter.state === "hit") { lean = -.24; x += 10 * scale * -facing; }
+    if (fighter.state === "launch-hit") { y -= Math.min(age / 170, 1) * 52 * scale; lean = -.3; }
     if (fighter.state === "airborne") {
       const progress = Math.min(age / 620, 1);
-      y -= 54 + Math.sin(progress * Math.PI) * 62;
+      y -= (54 + Math.sin(progress * Math.PI) * 62) * scale;
       rotation = facing * Math.sin(progress * Math.PI) * .55;
       frontLeg = { x: 30, y: 42 }; backLeg = { x: -28, y: 40 };
     }
-    if (fighter.state === "landing") { y -= Math.max(0, 1 - age / 150) * 18; lean = .48; frontLeg = { x: 31, y: 45 }; }
+    if (fighter.state === "landing") { y -= Math.max(0, 1 - age / 150) * 18 * scale; lean = .48; frontLeg = { x: 31, y: 45 }; }
 
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(rotation);
-    ctx.scale(facing, 1);
+    ctx.scale(facing * scale, scale);
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.strokeStyle = color;
@@ -146,7 +155,7 @@ export class FightScene {
     ctx.beginPath(); ctx.moveTo(3, -77); ctx.lineTo(10, -74); ctx.stroke();
     ctx.restore();
 
-    if (["hit", "launch-hit"].includes(fighter.state) && age < 130) this.drawImpact(ctx, x - facing * 28, y - 56, age, color);
+    if (["hit", "launch-hit"].includes(fighter.state) && age < 130) this.drawImpact(ctx, x - facing * 28 * scale, y - 56 * scale, age, color);
     if (fighter.state === "landing" && age < 190) this.drawDust(ctx, x, floor, age);
   }
 

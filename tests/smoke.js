@@ -1,4 +1,5 @@
 import { InputManager } from "../js/input-manager.js";
+import { TouchController } from "../js/touch-controls.js";
 import { ComboEngine } from "../js/combo-engine.js";
 import { COMBOS, TIMING } from "../data/combos.js";
 import { readGamepadState } from "../js/gamepad.js";
@@ -14,11 +15,17 @@ const report = (name, passed, detail = "") => {
 const input = new InputManager();
 let lastAction = null;
 input.addEventListener("action", (event) => { lastAction = event.detail.input; });
-input.press("DOWN", "pointer:1");
-input.press("H", "pointer:2");
-report("Multitouch DOWN sostenido + Heavy", lastAction === "DOWN+H", String(lastAction));
-input.release("H", "pointer:2");
-input.release("DOWN", "pointer:1");
+const touchFixture = document.createElement("div");
+touchFixture.innerHTML = '<button data-input="DOWN">DOWN</button><button data-input="H">H</button>';
+document.body.append(touchFixture);
+new TouchController(touchFixture, input).start();
+const [downButton, heavyButton] = touchFixture.querySelectorAll("button");
+downButton.dispatchEvent(new PointerEvent("pointerdown", { pointerId: 101, bubbles: true, cancelable: true }));
+heavyButton.dispatchEvent(new PointerEvent("pointerdown", { pointerId: 202, bubbles: true, cancelable: true }));
+report("Pointer Events multitouch: DOWN sostenido + Heavy", lastAction === "DOWN+H" && downButton.classList.contains("pressed") && heavyButton.classList.contains("pressed"), String(lastAction));
+heavyButton.dispatchEvent(new PointerEvent("pointerup", { pointerId: 202, bubbles: true }));
+downButton.dispatchEvent(new PointerEvent("pointerup", { pointerId: 101, bubbles: true }));
+touchFixture.remove();
 
 const completeEngine = new ComboEngine(COMBOS[0], TIMING, "practice");
 let complete = null;

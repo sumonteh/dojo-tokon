@@ -29,9 +29,15 @@
         <button id="touch-toggle" class="utility-button desktop-only" type="button" aria-pressed="false">CONTROLES</button>
         <button id="fullscreen-button" class="utility-button" type="button">PANTALLA COMPLETA</button>
       </div>
+      <nav class="compact-toolbar" aria-label="Paneles de entrenamiento">
+        <button type="button" data-overlay-open="mode-overlay">MODE <b id="compact-mode">LEARN</b></button>
+        <button type="button" data-overlay-open="inputs-overlay">INPUTS</button>
+        <button type="button" data-overlay-open="stats-overlay">STATS</button>
+      </nav>
     </header>
 
-    <section class="mode-strip" aria-label="Modo de entrenamiento">
+    <section id="mode-overlay" class="mode-strip compact-overlay" aria-label="Modo de entrenamiento">
+      <div class="overlay-heading"><strong>MODE</strong><button type="button" class="overlay-close" aria-label="Cerrar selector de modo">×</button></div>
       <div class="mode-tabs" role="tablist">
         <button class="mode-tab active" data-mode="learn" role="tab" aria-selected="true">LEARN<small>Aprende el orden</small></button>
         <button class="mode-tab" data-mode="practice" role="tab" aria-selected="false">PRACTICE<small>Entrena el ritmo</small></button>
@@ -55,14 +61,17 @@
           <div id="feedback" class="feedback" aria-live="assertive">
             <strong>LISTO</strong><small>Selecciona un modo y comienza</small>
           </div>
+          <span id="compact-hits" class="compact-hits">0 HITS</span>
         </div>
+        <div id="compact-history" class="compact-history" aria-label="Últimos inputs">—</div>
       </section>
 
       <aside class="side-panel">
-        <section class="panel-card history-card">
+        <section id="inputs-overlay" class="panel-card history-card compact-overlay">
           <button id="history-toggle" class="panel-heading collapsible" type="button" aria-expanded="true">
             <span>INPUT HISTORY</span><small>ÚLTIMOS 15</small>
           </button>
+          <button type="button" class="overlay-close" aria-label="Cerrar historial">×</button>
           <ol id="input-history" class="input-history">
             <li class="empty-history">Esperando inputs…</li>
           </ol>
@@ -86,8 +95,9 @@
           </div>
         </section>
 
-        <section class="panel-card session-card">
+        <section id="stats-overlay" class="panel-card session-card compact-overlay">
           <div class="panel-heading"><span>PROGRESO</span><small>EN ESTE DISPOSITIVO</small></div>
+          <button type="button" class="overlay-close" aria-label="Cerrar estadísticas">×</button>
           <dl class="stats-grid">
             <div><dt>Intentos</dt><dd id="stat-attempts">0</dd></div>
             <div><dt>Completados</dt><dd id="stat-success">0</dd></div>

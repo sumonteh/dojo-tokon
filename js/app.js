@@ -62,7 +62,31 @@ comboEngine.addEventListener("reset", () => ui.renderSequence(0));
 document.querySelectorAll(".mode-tab").forEach((tab) => tab.addEventListener("click", () => {
   comboEngine.setMode(tab.dataset.mode);
   ui.setMode(tab.dataset.mode);
+  closeOverlays();
 }));
+
+const overlays = [...document.querySelectorAll(".compact-overlay")];
+
+function closeOverlays() {
+  overlays.forEach((overlay) => overlay.classList.remove("overlay-open"));
+  document.querySelectorAll("[data-overlay-open]").forEach((button) => button.setAttribute("aria-expanded", "false"));
+}
+
+document.querySelectorAll("[data-overlay-open]").forEach((button) => {
+  button.setAttribute("aria-expanded", "false");
+  button.addEventListener("click", () => {
+    const target = document.querySelector(`#${button.dataset.overlayOpen}`);
+    const willOpen = !target.classList.contains("overlay-open");
+    closeOverlays();
+    if (willOpen) {
+      target.classList.add("overlay-open");
+      button.setAttribute("aria-expanded", "true");
+    }
+  });
+});
+
+document.querySelectorAll(".overlay-close").forEach((button) => button.addEventListener("click", closeOverlays));
+document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeOverlays(); });
 
 document.querySelector("#history-toggle").addEventListener("click", (event) => {
   const card = event.currentTarget.closest(".history-card");

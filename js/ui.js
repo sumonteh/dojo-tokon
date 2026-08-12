@@ -15,7 +15,10 @@ export class UI {
       feedback: document.querySelector("#feedback"),
       history: document.querySelector("#input-history"),
       source: document.querySelector("#input-source"),
-      streak: document.querySelector("#streak-value")
+      streak: document.querySelector("#streak-value"),
+      compactHistory: document.querySelector("#compact-history"),
+      compactHits: document.querySelector("#compact-hits"),
+      compactMode: document.querySelector("#compact-mode")
     };
     this.renderSequence(0);
     this.renderStats();
@@ -23,6 +26,8 @@ export class UI {
 
   setMode(mode) {
     this.mode = mode;
+    this.elements.compactMode.textContent = mode.toUpperCase();
+    this.elements.compactHits.textContent = "0 HITS";
     document.querySelectorAll(".mode-tab").forEach((tab) => {
       const selected = tab.dataset.mode === mode;
       tab.classList.toggle("active", selected);
@@ -62,6 +67,8 @@ export class UI {
     this.lastHistoryAt = timestamp;
     this.history.unshift({ input, gap });
     this.history = this.history.slice(0, 15);
+    this.elements.compactHistory.innerHTML = this.history.slice(0, 4).reverse()
+      .map((item) => `<span>${INPUT_GLYPHS[item.input] || item.input}</span>`).join("");
     this.elements.history.innerHTML = this.history.map((item, index) => `
       <li><span class="history-glyph">${INPUT_GLYPHS[item.input] || item.input}</span><span class="history-name">${item.input}</span><time>${index === this.history.length - 1 && !item.gap ? "0 ms" : `+${item.gap} ms`}</time></li>
     `).join("");
@@ -75,17 +82,20 @@ export class UI {
 
   showStep(detail) {
     this.renderSequence(detail.stepIndex);
+    this.elements.compactHits.textContent = `${detail.stepIndex} HITS`;
   }
 
   showComplete(result) {
     this.elements.streak.textContent = result.streak;
     this.setFeedback("complete", "COMBO COMPLETE", `${result.hits} hits · ${result.totalTime} ms · ${result.accuracy}% accuracy · P ${result.perfect} / G ${result.good} / Miss ${result.misses}`);
+    this.elements.compactHits.textContent = `${result.hits} HITS`;
     window.setTimeout(() => this.renderSequence(0), 650);
   }
 
   showDrop(detail) {
     this.elements.streak.textContent = "0";
     this.renderSequence(0);
+    this.elements.compactHits.textContent = "0 HITS";
     this.setFeedback("drop", "COMBO DROPPED", detail.detail);
   }
 
